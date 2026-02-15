@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Runs sequentially: load --> preprocess --> validate --> feature engineering
+Runs sequentially: load --> validate raw data --> preprocess --> validate preprocessed data --> feature engineering
 """
 
 import os
@@ -215,22 +215,24 @@ def main(args):
         print(f"F1 Score: {f1:.3f} | ROC AUC: {roc_auc:.3f}")
 
         # === STAGE 9: Model Serialization and Logging ===
-        print("Saving model to MLflow...")
-        # ESSENTIAL: Log model in MLflow's standard format for serving
-        mlflow.sklearn.log_model(
-            model, 
-            artifact_path="model"  # This creates a 'model/' folder in MLflow run artifacts
-        )
-        print("Model saved to MLflow for serving pipeline")
+        print("Saving model to MLflow and exporting for serving...")
 
-        # === Final Performance Summary ===
-        print(f"\nPerformance Summary:")
-        print(f"Training time: {train_time:.2f}s")
-        print(f"Inference time: {pred_time:.4f}s")
-        print(f"Samples per second: {len(X_test)/pred_time:.0f}")
-        
-        print(f"\nDetailed Classification Report:")
-        print(classification_report(y_test, y_pred, digits=3))
+        # Log model to MLflow (for experiment tracking)
+        mlflow.sklearn.log_model(
+            model,
+            artifact_path="model"
+        )
+
+        # ALSO export model directly to artifacts folder for serving
+        import joblib
+
+        serving_model_dir = project_root / "artifacts" / "model"
+        serving_model_dir.mkdir(parents=True, exist_ok=True)
+
+        joblib.dump(model, serving_model_dir / "model.pkl")
+
+        print(f"Model exported to {serving_model_dir}")
+
 
 
 if __name__ == "__main__":
