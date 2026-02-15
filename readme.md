@@ -1,8 +1,8 @@
-## Telco Churn – Complete ML Solution
+## Telco Churn – Complete ML Solution by Lars Mogensen
 
 ### Overview
 
-This project implements a comprehensive machine-learning pipeline to predict customer churn for a telecom company. It covers the entire workflow, from preparing data and training models to serving predictions via an API and web interface on AWS.
+This project implements a comprehensive machine-learning pipeline to predict customer churn for a telecom company. It covers the entire workflow, from data preparation and model training to serving predictions via an API and web interface. The application is containerized for easy deployment on any server or cloud environment.
 
 ### Why it matters
 
@@ -18,15 +18,12 @@ This project implements a comprehensive machine-learning pipeline to predict cus
 - **Prediction API:** FastAPI service exposing `/predict` (POST) and a root `/` endpoint for health checks.  
 - **Web interface:** Gradio UI mounted at `/ui` for easy, shareable testing.  
 - **Containerization:** Docker image with `uvicorn` entrypoint (`src.app.main:app`) listening on port 8000.  
-- **CI/CD pipeline:** GitHub Actions builds and pushes Docker images to Docker Hub, with optional ECS service deployment.  
-- **Orchestration:** AWS ECS Fargate runs the container serverlessly.  
-- **Networking:** ALB on HTTP:80 forwards traffic to a target group (IP targets on HTTP:8000).  
-- **Security:** Security groups restrict traffic—ALB allows inbound on 80, ECS tasks accept inbound only from the ALB SG.  
-- **Monitoring:** CloudWatch captures container logs and ECS service events.
+- **CI/CD pipeline:** GitHub Actions builds and optionally pushes Docker images to Docker Hub.  
+- **Deployment-ready:** The container can be run locally or deployed on any server or cloud platform supporting Docker.  
+- **Monitoring:** Logs are captured for debugging and performance tracking.
 
 ### Deployment workflow
 
-1. Code is pushed to `main` → GitHub Actions builds the Docker image and uploads it to Docker Hub.  
-2. ECS service is updated (manually or via workflow) to launch the new container version.  
-3. ALB performs health checks on `/` at port 8000; healthy tasks receive traffic.  
-4. Users can access the Gradio UI at `/ui` or send POST requests to `/predict` through the ALB DNS.
+1. Code is pushed to `main` → GitHub Actions builds the Docker image and optionally uploads it to a container registry.  
+2. The Docker container can be run locally or on a server, exposing FastAPI endpoints and the Gradio UI.  
+3. Users can access the Gradio UI at `/ui` or send POST requests to `/predict` through the API.
