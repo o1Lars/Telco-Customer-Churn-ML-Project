@@ -129,37 +129,37 @@ def _serve_transform(df: pd.DataFrame) -> pd.DataFrame:
 
 def predict(input_dict: dict) -> str:
     """
-    Main inference entry point.
-
-    Steps:
-    1. Convert raw input to DataFrame
-    2. Apply preprocessing pipeline (preferred)
-    3. Align features
-    4. Generate prediction
-    5. Return business-friendly output
+    Predict customer churn from raw input dictionary.
+    
+    This function is production-ready:
+    - Uses manual feature transformations (_serve_transform)
+    - Works for API and Gradio UI
+    - Handles numeric, binary, and categorical features
+    - Returns business-friendly string output
+    
+    Args:
+        input_dict (dict): Raw customer data dictionary (18 features)
+        
+    Returns:
+        str: "Likely to churn" or "Not likely to churn"
     """
-
-    # Step 1: Create single-row DataFrame
+    # Convert input dictionary to single-row DataFrame
     df = pd.DataFrame([input_dict])
-
-    # Step 2: Apply preprocessing
-    if preprocessing:
-        df_enc = preprocessing.transform(df)
-        df_enc = pd.DataFrame(df_enc, columns=FEATURE_COLS)
-    else:
-        df_enc = _serve_transform(df)
-
-    # Step 3: Generate prediction
-    try:
-        preds = model.predict(df_enc)
-
-        if hasattr(preds, "tolist"):
-            preds = preds.tolist()
-
-        result = preds[0] if isinstance(preds, (list, tuple)) else preds
-
-    except Exception as e:
-        raise RuntimeError(f"Model prediction failed: {e}")
-
-    # Step 4: Business output
+    
+    # === Feature transformation ===
+    # ALWAYS use _serve_transform() to ensure train/serve consistency
+    df_enc = _serve_transform(df)
+    
+    # === Model prediction ===
+    preds = model.predict(df_enc)
+    
+    # Convert to list if numpy array
+    if hasattr(preds, "tolist"):
+        preds = preds.tolist()
+    
+    # Extract single prediction value
+    result = preds[0] if isinstance(preds, (list, tuple)) else preds
+    
+    # === Business-friendly output ===
     return "Likely to churn" if result == 1 else "Not likely to churn"
+
