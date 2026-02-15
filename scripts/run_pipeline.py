@@ -106,6 +106,13 @@ def main(args):
         for c in df_enc.select_dtypes(include=["bool"]).columns:
             df_enc[c] = df_enc[c].astype(int)
         print(f"Feature engineering completed: {df_enc.shape[1]} features")
+        
+        # === FIX FOR XGBOOST 3.X: Convert object columns to category ===
+        obj_cols = df_enc.select_dtypes(include=["object"]).columns
+        if len(obj_cols) > 0:
+            print(f"Converting object columns to 'category' for XGBoost 3.x: {list(obj_cols)}")
+            for c in obj_cols:
+                df_enc[c] = df_enc[c].astype("category")
 
         # === CRITICAL: Save Feature Metadata for Serving Consistency ===
         # This ensures serving pipeline uses exact same features in exact same order
@@ -172,6 +179,9 @@ def main(args):
             n_jobs=-1,              # Use all CPU cores
             random_state=42,        # Reproducible results
             eval_metric="logloss",  # Evaluation metric
+            
+            # for xgboost 3.0>
+            enable_categorical=True,
             
             # ESSENTIAL: Handle class imbalance
             scale_pos_weight=scale_pos_weight  # Weight for positive class (churners)

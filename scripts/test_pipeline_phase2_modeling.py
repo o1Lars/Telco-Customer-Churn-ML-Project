@@ -17,6 +17,10 @@ assert set(df["Churn"].unique()) <= {0, 1}, "Churn not 0/1"
 X = df.drop(columns=["Churn"])
 y = df["Churn"]
 
+# Convert all object columns to category dtype for XGBoost 3.x
+for col in X.select_dtypes(include="object").columns:
+    X[col] = X[col].astype("category")
+
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, stratify=y, random_state=42
 )
@@ -38,6 +42,7 @@ def objective(trial):
         "n_jobs": -1,
         "scale_pos_weight": (y_train == 0).sum() / (y_train == 1).sum(),
         "eval_metric": "logloss",
+        "enable_categorical": True,  
     }
     model = XGBClassifier(**params)
     model.fit(X_train, y_train)
