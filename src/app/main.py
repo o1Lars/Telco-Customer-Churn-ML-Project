@@ -176,15 +176,14 @@ demo = gr.Interface(
         gr.Number(label="Total Charges ($)", value=85.0, minimum=0, maximum=10000),
     ],
     outputs=gr.Textbox(label="Churn Prediction", lines=2),
-    title="🔮 Telco Customer Churn Predictor",
+    title="Telco Customer Churn Predictor GUI",
     description="""
     **Predict customer churn probability using machine learning**
     
     Fill in the customer details below to get a churn prediction. The model uses XGBoost trained on 
     historical telecom customer data to identify customers at risk of churning.
     
-    💡 **Tip**: Month-to-month contracts with fiber optic internet and electronic check payments 
-    tend to have higher churn rates.
+    Made by Lars Mogensen.
     """,
     examples=[
         # High churn risk example
