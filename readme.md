@@ -4,7 +4,7 @@
 
 This project implements a comprehensive machine-learning pipeline to predict customer churn for a telecom company. It covers the entire workflow, from data preparation and model training to serving predictions via an API and web interface. The application is containerized for easy deployment on any server or cloud environment.
 
-(Full raw dataset and complete MLflow logs are not included due to size/privacy; a small demo dataset is provided for reproducibility.)
+(Full raw dataset and complete MLflow logs are not included due to size/privacy; a small demo dataset is provided for reproducibility.) 
 
 ### Why it matters
 
